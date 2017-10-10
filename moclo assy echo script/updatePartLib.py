@@ -19,10 +19,11 @@ Instructions:
 
 Created: 10/07/2017
 
-Updated: N/A
+Updated: 10/09/2017
 
 Update Notes: Doesn't yet write over the original library. Possible add function
 to just append new sheets to the library where sheet name is the time of update.
+Added a verification step "do you really want to update?"
 
 """
 
@@ -56,6 +57,19 @@ def update_lib_vols (pick_list_df, library_df):
         library.loc[library['well'] == part, 'Vol (uL) in plate'] = newVol
 
     return library
+
+#verify the user wants to udpate their library sheet, gives option to correct a mistake
+def check_before_update():
+    YorN = input('Do you really want to update this library with this assembly? (y/n)   ')
+
+    if YorN in ['Y', 'y']:
+        pass
+    elif YorN in ['N', 'n']:
+        raise ValueError('Update procedure aborted')
+    else:
+        raise ValueError('I do not recognize this input, procedure aborted')
+
+    return None
 
 """end library update functions"""
 
@@ -214,7 +228,8 @@ def write_to_xlsx (updated_lib_df):
 
 
     #create ExcelWriter object to handle creating your new library file as .xlsx
-    writer = pd.ExcelWriter('new updated lib.xlsx', engine='xlsxwriter')
+    new_file_name = 'new updated lib.xlsx'
+    writer = pd.ExcelWriter(new_file_name, engine='xlsxwriter')
 
     #convert the dataframe to an xlsxwriter excel object
     updated_lib_df.to_excel(writer, sheet_name='Sheet1', index=False)
@@ -222,9 +237,7 @@ def write_to_xlsx (updated_lib_df):
     #Get the xlsxwriter worksheet object.
     worksheet = writer.sheets['Sheet1']
 
-
-
-    #Use the set of 26 lowercase letters, zero-indexed, to get the excel column
+    #Use the set of 26 uppercase letters, zero-indexed, to get the excel column
     #for the right most column in the updated library df
     r_most_col = string.ascii_uppercase[len(updated_lib_df.columns) - 1]
 
@@ -237,7 +250,7 @@ def write_to_xlsx (updated_lib_df):
     #Close the Pandas Excel writer and output the Excel file.
     writer.save()
 
-    print('I saved your updated library file')
+    print('I saved your updated library file as: {}'.format(new_file_name))
 
     return None
 
@@ -248,6 +261,8 @@ def write_to_xlsx (updated_lib_df):
 def main():
     library_used = pick_parts_library()
     pl_used = pick_pick_list()
+
+    check_before_update()
 
     updated_library = update_lib_vols (pl_used, library_used)
 
