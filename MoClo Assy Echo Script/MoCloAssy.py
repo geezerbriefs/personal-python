@@ -448,39 +448,6 @@ def check_if_final_vols_ok (output_df):
 
 
 
-"""Functions for updating input library to reflect volumes used in assembly"""
-# Use the final output sheet to subtract volume from the library part volumes
-# to keep track of how much is in each well
-# ***You have to be careful with this function, if you regenerate an output sheet for testing
-# or just out of neuroticism, running this function each time will subtract from the library
-# volumes, even though an assembly has not been done. Only use this function when an assembly
-# has actually been done!***
-def update_lib_vols (want_to_run, output_df, library_df):
-    output = output_df
-    library = library_df
-
-    #want_to_run is a bool that determines if the function should run and actually update the library
-    if want_to_run:
-        for part in np.unique(output['Source Well']):
-            vols = output.loc[output['Source Well'] == part, 'Transfer Volume'] #in nL
-
-            totalTrans = sum(vols) / 1000 #total transferred volume, in uL
-
-            currVol = library.loc[library['well'] == part, 'Vol (uL) in plate']
-
-            newVol = currVol - totalTrans
-
-            #set the volume in the plate to the new volume
-            library.loc[library['well'] == part, 'Vol (uL) in plate'] = newVol
-
-        return library
-
-    else:
-        return None
-"""end library update functions"""
-
-
-
 """Main running block"""
 
 def main():
