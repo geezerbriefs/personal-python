@@ -4,19 +4,19 @@ import os
 class plate1536:
     """Holds all the column and row values about 1536 well plates"""
 
-    #all the columns in a 1536 well plate (32 of them)
-    columns = ['A','B','C','D','E','F','G','H','I','J','K','L',\
+    #all the rows in a 1536 well plate (32 of them)
+    rows = ['A','B','C','D','E','F','G','H','I','J','K','L',\
                'M','N','O','P','Q','R','S','T','U','V','W','X',\
                'Y','Z','AA','AB','AC','AD','AE','AF']
 
-    #make a dict so each column name is accessible by a number
-    col_dict = {}
+    #make a dict so each row name is accessible by a number
+    row_dict = {}
 
-    for i in range(len(columns)):
-        col_dict[i] = columns[i]
+    for i in range(len(rows)):
+        row_dict[i] = rows[i]
 
-    #all the rows in a 1563 well plate (48 of them)
-    rows = [i+1 for i in range(48)]
+    #all the columns in a 1563 well plate (48 of them)
+    columns = [i+1 for i in range(48)]
 
 
 def split_well_name (well_name):
@@ -67,8 +67,8 @@ def check_orient (tuple_top_L, tuple_bottom_R):
     #get the plate columns from the plate class
     columns = plate1536.columns
 
-    #all the rows in a 1563 well plate (48 of them)
-    rows = [i+1 for i in range(48)]
+    #get the plate rows from the plate class
+    rows = plate1536.rows
 
     #check if bottom_R is actually to the right of top_L
     if columns.index(tuple_top_L[0]) > columns.index(tuple_bottom_R[0]):
@@ -138,30 +138,30 @@ def create_region_w_spacing (tuple_top_L, tuple_bottom_R):
     ###The list of indices in plate1536.rows to use is now set###
 
 
-    #get all the column NAMES you want to use
+    #get all the columns you want to use as STRINGS
     col_strs = []
     for i in col_idxs_to_shoot:
-        col_strs += [ plate1536.col_dict[i] ] #have to have extra list brackets to avoid python interpreting a string 'FFF' as
+        col_strs += [ str(plate1536.columns[i]) ] #have to have extra list brackets to avoid python interpreting a string 'FFF' as
                                             #a list ['F', 'F', 'F'] and adding 3 items instead of 'FFF'
 
     #get all the rows you want to use as STRINGS
     row_strs = []
     for i in row_idxs_to_shoot:
-        row_strs += [ str(plate1536.rows[i]) ]#have to have extra list brackets to avoid python interpreting a string 'FFF' as
+        row_strs += [ plate1536.row_dict[i] ]#have to have extra list brackets to avoid python interpreting a string 'FFF' as
                                             #a list ['F', 'F', 'F'] and adding 3 items instead of 'FFF'
 
 
-    return col_strs, row_strs
+    return row_strs, col_strs
 
 
-def well_list_from_region (col_strs, row_strs):
+def well_list_from_region (row_strs, col_strs):
 
     """Makes a single list of wells of format 'AA##' that represent the destination
     well locations to be shot by the echo"""
 
     well_pos_list = []
-    for i in col_strs:
-        for j in row_strs:
+    for i in row_strs:
+        for j in col_strs:
             well_pos_list += [ i + j ]#have to have extra list brackets to avoid python interpreting a string 'FFF' as
                                      #a list ['F', 'F', 'F'] and adding 3 items instead of 'FFF'
 
@@ -219,9 +219,9 @@ def main ():
 
         check_orient (tl, br)
 
-        col, row = create_region_w_spacing (tl, br)
+        row, col = create_region_w_spacing (tl, br)
 
-        wells = well_list_from_region (col, row)
+        wells = well_list_from_region (row, col)
 
         region_info = add_source_and_vol (wells)
 
