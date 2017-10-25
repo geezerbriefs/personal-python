@@ -70,13 +70,13 @@ def check_orient (tuple_top_L, tuple_bottom_R):
     #get the plate rows from the plate class
     rows = plate1536.rows
 
-    #check if bottom_R is actually to the right of top_L
-    if columns.index(tuple_top_L[0]) > columns.index(tuple_bottom_R[0]):
-        raise ValueError('Your bottom right well is to the LEFT of your top left well')
-
     #check if bottom_R is actually below top_L
-    if rows.index(int(tuple_top_L[1])) > rows.index(int(tuple_bottom_R[1])):
+    if rows.index(tuple_top_L[0]) > rows.index(tuple_bottom_R[0]):
         raise ValueError('Your bottom right well is ABOVE your top left well')
+
+    #check if bottom_R is actually to the right of top_L
+    if columns.index(int(tuple_top_L[1])) > columns.index(int(tuple_bottom_R[1])):
+        raise ValueError('Your bottom right well is LEFT of your top left well')
 
     return None
 
@@ -91,7 +91,7 @@ def create_region_w_spacing (tuple_top_L, tuple_bottom_R):
     spacing = int(input ('How many well spaces do you want between each spot?   '))
 
 
-    #get the plate columns from the plate class
+    #get the plate column numbers from the plate class
     columns = plate1536.columns
     #get the plate rows from the plate class
     rows = plate1536.rows
@@ -99,7 +99,7 @@ def create_region_w_spacing (tuple_top_L, tuple_bottom_R):
     ###Begin creating list of columns to use###
 
     #initialize and use next
-    curr_col_idx = columns.index(tuple_top_L[0])
+    curr_col_idx = columns.index(int(tuple_top_L[1]))
 
     #set left most column to use as the column given by user in top_left
     col_idxs_to_shoot = [curr_col_idx]
@@ -108,7 +108,7 @@ def create_region_w_spacing (tuple_top_L, tuple_bottom_R):
     #by (spacing + 1). If that is beyond the right-most border set by
     #the well region definitions, then it will stop, containing all
     #column choices within the left and right bounds
-    while (curr_col_idx + spacing + 1) <= columns.index(tuple_bottom_R[0]):
+    while (curr_col_idx + spacing + 1) <= columns.index(int(tuple_bottom_R[1])):
 
         curr_col_idx += (spacing + 1)
 
@@ -120,7 +120,7 @@ def create_region_w_spacing (tuple_top_L, tuple_bottom_R):
     ###Begin creating list of rows to use###
 
     #initialize and use next
-    curr_row_idx = rows.index(int(tuple_top_L[1]))
+    curr_row_idx = rows.index(tuple_top_L[0])
 
     #set top most row to use as the row given by user in top_left
     row_idxs_to_shoot = [curr_row_idx]
@@ -129,7 +129,7 @@ def create_region_w_spacing (tuple_top_L, tuple_bottom_R):
     #by (spacing + 1). If that is beyond the bottom-most border set by
     #the well region definitions, then it will stop, containing all
     #row choices within the top and bottom bounds
-    while (curr_row_idx + spacing + 1) <= rows.index(int(tuple_bottom_R[1])):
+    while (curr_row_idx + spacing + 1) <= rows.index(tuple_bottom_R[0]):
 
         curr_row_idx += (spacing + 1)
 
