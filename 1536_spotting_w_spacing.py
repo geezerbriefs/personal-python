@@ -1,3 +1,24 @@
+"""
+***Spotting things on a 1536 well plate script***
+
+This script takes a bunch of user input to define a rectangular region of a 1536
+well plate into which to shoot drops of liquid at regular (distance) intervals
+measured in units of (1536 well plate wells). Drop volume is user specified.
+Spotting is done using the Echo, the script asks for the source wells of each
+liquid to be shot; it also produces an Echo-formatted pick list at the end of
+the script.
+
+Created: 10/24/17
+
+Updated: 10/26/17
+
+Notes: Updated create_region_w_spacing() to output to the terminal the number of rows,
+columns, total spots in the current region specified. In the future, might be cool to
+append another sheet to the pick list output that lists this information for each region
+being shot by that sheet, so post-processing the images is easier or something.
+
+"""
+
 import pandas as pd
 import os
 
@@ -150,6 +171,8 @@ def create_region_w_spacing (tuple_top_L, tuple_bottom_R):
         row_strs += [ plate1536.row_dict[i] ]#have to have extra list brackets to avoid python interpreting a string 'FFF' as
                                             #a list ['F', 'F', 'F'] and adding 3 items instead of 'FFF'
 
+
+    print("This region has {} rows (letters), {} columns (#'s) per row. That's a total of {} spots".format(len(row_strs), len(col_strs), len(row_strs) * len(col_strs)))
 
     return row_strs, col_strs
 
